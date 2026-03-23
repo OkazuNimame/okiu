@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:okiu/Logic/FlameGameProvider/GameListenerProvider.dart';
 import 'package:okiu/Logic/ScreenSize.dart';
+import 'package:okiu/SubjectManagementPage/ManegeMentPage/SubjectManegementList.dart';
 import 'package:okiu/UIParts/Dialog./dialogs.dart';
+import 'package:okiu/UIParts/MainPats/testAnimation.dart';
 import 'package:okiu/UIParts/SlideButton.dart';
 
 class SubjectmanagementPageUi extends ConsumerStatefulWidget {
@@ -21,13 +23,13 @@ class SubjectmanagementPageUi extends ConsumerStatefulWidget {
 }
 
 class _SubjectmanagementPageUi extends ConsumerState<SubjectmanagementPageUi> {
-  late BackgroundAnimation game;
+  late BackgroundAnimation2 game;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    game = BackgroundAnimation();
+    game = BackgroundAnimation2();
   }
 
   @override
@@ -38,7 +40,7 @@ class _SubjectmanagementPageUi extends ConsumerState<SubjectmanagementPageUi> {
     return Scaffold(
       body: LayoutBuilder(
         builder: (_, cons) {
-          game = BackgroundAnimation();
+          game = BackgroundAnimation2();
 
           return Stack(
             children: [
@@ -92,12 +94,16 @@ class _SubjectmanagementPageUi extends ConsumerState<SubjectmanagementPageUi> {
                                         Container(
                                           padding: EdgeInsets.all(5),
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(20),
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
                                             color: Colors.white70,
                                           ),
                                           child: Text(
                                             '登録科目',
-                                            style: TextStyle(fontSize: width * 0.07),
+                                            style: TextStyle(
+                                              fontSize: width * 0.07,
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -113,10 +119,20 @@ class _SubjectmanagementPageUi extends ConsumerState<SubjectmanagementPageUi> {
                             height: cons.maxHeight * 0.09,
                             width: cons.maxWidth * 0.9,
 
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                            ),
 
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        Subjectmanegementlist(),
+                                  ),
+                                );
+                              },
 
                               child: Center(
                                 child: Text(
@@ -152,7 +168,12 @@ class _SubjectmanagementPageUi extends ConsumerState<SubjectmanagementPageUi> {
                             v: () {
                               print(ref.watch(gameListenerProvider));
                               if (ref.watch(gameListenerProvider)) {
-                                awesomeDialog(context, "詳細ダイアログ", "", DialogType.info);
+                                awesomeDialog(
+                                  context,
+                                  "詳細ダイアログ",
+                                  "",
+                                  DialogType.info,
+                                );
                               }
                             },
                           ),
@@ -188,8 +209,10 @@ class _SubjectPageAnimation extends State<SubjectPageAnimation>
     // TODO: implement initState
     super.initState();
 
-    _animationController = AnimationController(vsync: this, duration: Duration(seconds: 1))
-      ..forward();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 1),
+    )..forward();
   }
 
   @override
@@ -228,6 +251,12 @@ class BackgroundAnimation extends p.Forge2DGame {
   Ground? ground;
   LeftGround? leftGround;
   RightGround? rightGround;
+
+  @override
+  void update(double dt) {
+    // TODO: implement update
+    super.update(dt * 3);
+  }
 
   @override
   Future<void> onLoad() async {
@@ -313,7 +342,11 @@ class FallingLetter extends p.BodyComponent<BackgroundAnimation> {
   Color color;
   late TextPaint textPaint;
 
-  FallingLetter({required this.text, required this.color, required this.fontSize}) {
+  FallingLetter({
+    required this.text,
+    required this.color,
+    required this.fontSize,
+  }) {
     textPaint = TextPaint(
       style: TextStyle(fontSize: fontSize, color: Colors.black),
     );
@@ -323,11 +356,15 @@ class FallingLetter extends p.BodyComponent<BackgroundAnimation> {
   p.Body createBody() {
     final shape = p.CircleShape()
       ..radius =
-          textPaint.getLineMetrics(text).width / 2 + textPaint.getLineMetrics(text).width * 0.3;
+          textPaint.getLineMetrics(text).width / 2 +
+          textPaint.getLineMetrics(text).width * 0.3;
 
     final randomPosition = Vector2(game.size.x * Random().nextDouble(), -50);
 
-    final bodyDef = p.BodyDef(position: randomPosition, type: p.BodyType.dynamic);
+    final bodyDef = p.BodyDef(
+      position: randomPosition,
+      type: p.BodyType.dynamic,
+    );
 
     final body = world.createBody(bodyDef);
 
@@ -349,7 +386,8 @@ class FallingLetter extends p.BodyComponent<BackgroundAnimation> {
       ..strokeWidth = 5;
 
     double radius =
-        textPaint.getLineMetrics(text).width / 2 + textPaint.getLineMetrics(text).width * 0.3;
+        textPaint.getLineMetrics(text).width / 2 +
+        textPaint.getLineMetrics(text).width * 0.3;
 
     // 円
     canvas.drawCircle(Offset.zero, radius, paint);
@@ -374,7 +412,8 @@ class Ground extends p.BodyComponent<BackgroundAnimation> {
   p.Body createBody() {
     const thickness = 1.0;
 
-    final shape = p.PolygonShape()..setAsBox(size.x / 2, thickness / 2, Vector2.zero(), 0);
+    final shape = p.PolygonShape()
+      ..setAsBox(size.x / 2, thickness / 2, Vector2.zero(), 0);
 
     final bodyDef = p.BodyDef(
       position: Vector2(size.x / 2, size.y - thickness / 2),
@@ -390,8 +429,12 @@ class LeftGround extends p.BodyComponent<BackgroundAnimation> {
   LeftGround({required this.size});
   @override
   p.Body createBody() {
-    final shape = p.PolygonShape()..setAsBox(0.5, size.y / 2, Vector2.zero(), 0);
-    final bodyDef = p.BodyDef(position: Vector2(0, size.y / 2), type: p.BodyType.static);
+    final shape = p.PolygonShape()
+      ..setAsBox(0.5, size.y / 2, Vector2.zero(), 0);
+    final bodyDef = p.BodyDef(
+      position: Vector2(0, size.y / 2),
+      type: p.BodyType.static,
+    );
     return world.createBody(bodyDef)..createFixture(p.FixtureDef(shape));
   }
 }
@@ -401,8 +444,12 @@ class RightGround extends p.BodyComponent<BackgroundAnimation> {
   RightGround({required this.size});
   @override
   p.Body createBody() {
-    final shape = p.PolygonShape()..setAsBox(0.5, size.y / 2, Vector2.zero(), 0);
-    final bodyDef = p.BodyDef(position: Vector2(size.x, size.y / 2), type: p.BodyType.static);
+    final shape = p.PolygonShape()
+      ..setAsBox(0.5, size.y / 2, Vector2.zero(), 0);
+    final bodyDef = p.BodyDef(
+      position: Vector2(size.x, size.y / 2),
+      type: p.BodyType.static,
+    );
     return world.createBody(bodyDef)..createFixture(p.FixtureDef(shape));
   }
 }

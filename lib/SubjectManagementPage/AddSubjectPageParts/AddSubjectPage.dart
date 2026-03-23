@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:okiu/Logic/FlameGameProvider/GameListenerProvider.dart';
 import 'package:okiu/Logic/ScreenSize.dart';
 import 'package:okiu/SubjectManagementPage/AddSubjectPageParts/AddAnimation.dart';
+import 'package:okiu/SubjectManagementPage/SubjectListPageParts/SubjectListPage.dart';
 import 'package:okiu/UIParts/Dialog./dialogs.dart';
 import 'package:okiu/UIParts/SlideButton.dart';
 
@@ -22,6 +23,7 @@ class _Addsubjectpage extends ConsumerState<Addsubjectpage> {
     double height = ScreenSize(context)[0];
     double width = ScreenSize(context)[1];
     return Scaffold(
+      backgroundColor: Colors.amber.shade300,
       body: Stack(
         children: [
           Center(
@@ -37,7 +39,10 @@ class _Addsubjectpage extends ConsumerState<Addsubjectpage> {
                   return Column(
                     children: [
                       SizedBox(height: cons.maxHeight * 0.1),
-                      Addanimation(height: cons.maxHeight * 0.25, width: cons.maxWidth * 0.8),
+                      Addanimation(
+                        height: cons.maxHeight * 0.25,
+                        width: cons.maxWidth * 0.8,
+                      ),
 
                       SizedBox(height: cons.maxHeight * 0.1),
 
@@ -45,15 +50,27 @@ class _Addsubjectpage extends ConsumerState<Addsubjectpage> {
                         height: cons.maxHeight * 0.09,
                         width: cons.maxWidth * 0.9,
 
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                        ),
 
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Subjectlistpage(),
+                              ),
+                            );
+                          },
 
                           child: Center(
                             child: Text(
                               "Tap!",
-                              style: TextStyle(fontSize: cons.maxWidth * 0.1, color: Colors.black),
+                              style: TextStyle(
+                                fontSize: cons.maxWidth * 0.1,
+                                color: Colors.black,
+                              ),
                             ),
                           ),
                         ),
@@ -80,7 +97,12 @@ class _Addsubjectpage extends ConsumerState<Addsubjectpage> {
                         width: cons.maxWidth * 0.9,
                         v: () {
                           if (ref.watch(gameListenerProvider)) {
-                            awesomeDialog(context, "詳細ダイアログ", "", DialogType.info);
+                            awesomeDialog(
+                              context,
+                              "詳細ダイアログ",
+                              "",
+                              DialogType.info,
+                            );
                           }
                         },
                       ),

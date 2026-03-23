@@ -54,7 +54,7 @@ class Animations extends FlameGame {
 
     add(
       TimerComponent(
-        period: 2,
+        period: 1,
         repeat: true,
         onTick: () {
           if (index < 4) {
@@ -83,7 +83,9 @@ class RotatingText extends TextComponent {
   RotatingText({required this.text, required this.interval})
     : super(
         text: text,
-        textRenderer: TextPaint(style: const TextStyle(fontSize: 40, color: Colors.black)),
+        textRenderer: TextPaint(
+          style: const TextStyle(fontSize: 40, color: Colors.black),
+        ),
       );
 
   @override
@@ -106,12 +108,18 @@ class RotatingText extends TextComponent {
 
     // 中央
 
-    add(MoveEffect.to(target, EffectController(duration: 2, curve: Curves.easeOut)));
+    add(
+      MoveEffect.to(
+        target,
+        EffectController(duration: 1, curve: Curves.easeOut),
+      ),
+    );
     add(RotateEffect.to(pi * 2, EffectController(duration: 1)));
   }
 }
 
 class AddShower extends FlameGame with HasCollisionDetection {
+  int maxBubbles = 60;
   AddBubbles? addBubbles;
   @override
   Future<void> onLoad() async {
@@ -134,10 +142,18 @@ class AddShower extends FlameGame with HasCollisionDetection {
         period: 0.1,
         repeat: true,
         onTick: () {
+          // 👇 現在の泡の数をチェック
+          if (children.whereType<AddBubbles>().length >= maxBubbles) {
+            return;
+          }
+
           final x = Random().nextDouble() * gameSize.x;
 
           add(
-            AddBubbles(color: colors[Random().nextInt(colors.length)], interval: x)
+            AddBubbles(
+                color: colors[Random().nextInt(colors.length)],
+                interval: x,
+              )
               ..size = Vector2.all(gameSize.x / 20)
               ..anchor = Anchor.center
               ..position = Vector2(x, 0),
@@ -159,9 +175,10 @@ class AddBubbles extends PositionComponent with CollisionCallbacks {
   AddBubbles({required this.color, required this.interval});
 
   @override
-  FutureOr<void> onLoad() {
-    add(CircleHitbox(radius: size.x / 20));
-    return super.onLoad();
+  FutureOr<void> onLoad() async{
+    await super.onLoad();
+    add(CircleHitbox());
+    
   }
 
   @override
@@ -171,9 +188,10 @@ class AddBubbles extends PositionComponent with CollisionCallbacks {
 
     canvas.drawCircle(
       Offset.zero,
-      size.x / 5,
+      size.x / 3,
       Paint()
         ..color = color
+        ..strokeWidth = 3
         ..style = PaintingStyle.stroke,
     );
   }
@@ -186,6 +204,7 @@ class AddBubbles extends PositionComponent with CollisionCallbacks {
     position.y += 100 * dt;
   }
 
+
   @override
   void onCollision(Set<Vector2> points, PositionComponent other) {
     super.onCollision(points, other);
@@ -196,14 +215,11 @@ class AddBubbles extends PositionComponent with CollisionCallbacks {
 class Floor extends PositionComponent with CollisionCallbacks {
   @override
   Future<void> onLoad() async {
-    size = Vector2(size.x, 1);
-    position = Vector2(0, size.y - 20);
+    final gameSize = findGame()!.size;
+
+    size = Vector2(gameSize.x, 20); // 幅ちゃんと取る
+    position = Vector2(0, gameSize.y - 20);
 
     add(RectangleHitbox());
-  }
-
-  @override
-  void render(Canvas canvas) {
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), Paint()..color = Colors.red);
   }
 }

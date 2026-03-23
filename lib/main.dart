@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:okiu/SubjectManagementPage/AddSubjectPageParts/AddSubjectPage.dart';
 import 'package:okiu/UIParts/MainPats/SubjectManagement_Page_UI.dart';
+import 'package:okiu/notification/DeadlineNotification.dart';
 
-void main() {
+void main()async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initNotifications();
+
+  await flutterLocalNotificationsPlugin
+    .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>()
+    ?.requestNotificationsPermission();
 
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
@@ -14,9 +22,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
